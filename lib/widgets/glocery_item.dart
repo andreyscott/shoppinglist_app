@@ -20,7 +20,7 @@ class _GloceryListState extends State<GloceryList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('testing'),
+        title: const Text('Your Groceries'),
         actions: [
           IconButton(onPressed: addItem, icon: const Icon(Icons.add)),
         ],

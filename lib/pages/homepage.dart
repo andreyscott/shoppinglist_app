@@ -14,8 +14,7 @@ class Homepage extends StatelessWidget {
           ),
           backgroundColor: Colors.grey[600],
         ),
-        body: Container(
-            child: Column(
+        body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(
@@ -94,6 +93,6 @@ class Homepage extends StatelessWidget {
               height: 10,
             ),
           ],
-        )));
+        ));
   }
 }
