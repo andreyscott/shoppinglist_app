@@ -17,11 +17,25 @@ class GloceryList extends StatefulWidget {
 
 class _GloceryListState extends State<GloceryList> {
   List<GroceryItem> _groceryItems = [];
+  var _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadItems();
+  }
 
   void _loadItems() async {
     final url =
         Uri.https('test-cf327-default-rtdb.firebaseio.com', 'shoppings.json');
     final response = await http.get(url);
+    if (response.statusCode >= 400) {
+      setState(() {
+        _error = 'Failed to fetch the data something must be wrong';
+      });
+    }
+
     final Map<String, dynamic> listData = json.decode(response.body);
     final List<GroceryItem> loadedItems = [];
     for (final item in listData.entries) {
@@ -40,6 +54,7 @@ class _GloceryListState extends State<GloceryList> {
     }
     setState(() {
       _groceryItems = loadedItems;
+      _isLoading = false;
     });
   }
 
@@ -69,6 +84,10 @@ class _GloceryListState extends State<GloceryList> {
   Widget build(BuildContext context) {
     Widget content = const Center(child: Text('No items added yet.'));
 
+    if (_isLoading) {
+      content = const Center(child: CircularProgressIndicator());
+    }
+
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
         itemCount: _groceryItems.length,
@@ -90,6 +109,10 @@ class _GloceryListState extends State<GloceryList> {
           ),
         ),
       );
+    }
+
+    if (_error != null) {
+      content = Center(child: Text(_error!));
     }
 
     return Scaffold(
