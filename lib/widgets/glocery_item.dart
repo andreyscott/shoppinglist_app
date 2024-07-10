@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shoppinglist_app/data/categories.dart';
+import 'package:shoppinglist_app/data/dummy_items.dart';
 
 import 'package:shoppinglist_app/models/grocery_item.dart';
 import 'package:shoppinglist_app/widgets/new_item.dart';
@@ -34,6 +35,13 @@ class _GloceryListState extends State<GloceryList> {
       setState(() {
         _error = 'Failed to fetch the data something must be wrong';
       });
+    }
+
+    if (response.body == 'null') {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
     }
 
     final Map<String, dynamic> listData = json.decode(response.body);
@@ -74,10 +82,22 @@ class _GloceryListState extends State<GloceryList> {
     });
   }
 
-  void _removeItem(GroceryItem item) {
+  void _removeItem(GroceryItem item) async {
+    var index = groceryItems.indexOf(item);
     setState(() {
       _groceryItems.remove(item);
     });
+
+    final url = Uri.https(
+        'test-cf327-default-rtdb.firebaseio.com', 'shoppings/${item.id}.json');
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _groceryItems.insert(index, item);
+      });
+    }
   }
 
   @override
